@@ -207,9 +207,9 @@ def fade(field, steps, boxsize, frame, colour, extent=None, phi=0, fade_in = Fal
         ax = plt.Axes(fig, [0., 0., 1., 1.])
         ax.set_axis_off()
         fig.add_axes(ax)
-        ax.fill(0, 1, 'k')
+        #ax.fill(0, 1, 'k')
         alpha = u[i]
-    
+        
         a=plt.imshow(img_log, extent=ext, cmap=colour, origin='lower', alpha=alpha, aspect='auto')
         plt.savefig('./Video_test1/vid_test1_%d.png'%frame)
         plt.clf()
