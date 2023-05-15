@@ -37,7 +37,7 @@ print(z)
 #h = 0.6777
 size = 10
 #extent = [-size, size, -size, size]
-min_zoom = 1
+min_zoom = 2
 
 # In[7]:
 
@@ -199,7 +199,8 @@ def fade(field, steps, boxsize, frame, colour, extent=None, phi=0, fade_in = Fal
     img = qv.get_image()
     ext = qv.get_extent()
     print(ext)
-    max_zoom = ext[1]
+    if fade_in == True:
+        max_zoom = ext[1]
     img_log = img_norm(img, boxsize)
     
     for i in range(0, steps+1):
@@ -220,7 +221,10 @@ def fade(field, steps, boxsize, frame, colour, extent=None, phi=0, fade_in = Fal
         elif i == steps:
             print(frame)
             #plt.clf()
-            return max_zoom, frame
+            if fade_in == True:
+                return max_zoom, frame
+            else:
+                return frame
 
 
 # In[ ]:
@@ -229,11 +233,13 @@ def fade(field, steps, boxsize, frame, colour, extent=None, phi=0, fade_in = Fal
 def evolve(fields, boxsize, frame, colour, extent, phi=0):
     
     for f in fields:
+        print(f)
+        print(frame)
         qv = QuickView(f[['x', 'y', 'z']].values, mass=(f.mass.values if f.name != 'dm' else None), hsml=(f.hsml.values if f.name != 'dm' else None), r='infinity', plot=False, logscale=False, xsize=1000, ysize=1000, p=phi, extent=extent)
         
         img = qv.get_image()
         img_log = img_norm(img, boxsize)
-        for _ in range(10):
+        for _ in range(5):
             plt.imsave('./Video_test1/vid_test1_%d.png'%frame, img_log, cmap=colour, origin='lower')
             frame += 1
         
@@ -281,11 +287,15 @@ star_evol = (stars_10,
              limit(.01, read_data(read_snap(snaps[26][0], snaps[26][1], snaps[26][2]), 4), 'hsml'),
              limit(.01, read_data(read_snap(snaps[27][0], snaps[27][1], snaps[27][2]), 4), 'hsml'),
              stars_28)
+#star = limit(.01, read_data(read_snap(snaps[19][0], snaps[19][1], snaps[19][2]), 4), 'hsml')
+#for j in stars_28['hsml']:
+    #if j != 0.01:
+        #print(j)
+#sys.exit()
 
 #Start with DM fade in
 max_zoom, frame = fade(dm_0, 50, boxsize, 0, 'viridis', fade_in = True)
 print('Done with fade in')
-sys.exit()
 #DM zoom x2.5
 extent, frame = zoom(max_zoom, 2.5, 125, dm_0, boxsize, frame, 'viridis')
 print('Done with zoom in x2.5')
@@ -314,7 +324,7 @@ print('Done with rotate by pi/2')
 extent, frame = zoom(extent[1], 0.25, 125, stars_10, boxsize, frame, 'bone', phi)
 print('Done with zoom out x4')
 #Evolve star through z
-frame = evolve(star_evol, boxsize, frame, 'plasma', extent, phi)
+frame = evolve(star_evol, boxsize, frame, 'bone', extent, phi)
 print('Done with star evolve')
 #Fade out on stars
 frame = fade(stars_28, 50, boxsize, frame, 'bone', extent, phi, fade_out = True)
