@@ -4,7 +4,7 @@
 
 # In[1]:
 
-#import matplotlib
+import matplotlib.patches as mpatches
 #matplotlib.use('Agg')
 import h5py
 import numpy as np
@@ -210,7 +210,9 @@ def fade(field, steps, boxsize, frame, colour, extent=None, phi=0, fade_in = Fal
         fig.add_axes(ax)
         #ax.fill(0, 1, 'k')
         alpha = u[i]
+        rect=mpatches.Rectangle((-4.3,-4.3), 8.6, 8.6, facecolor='k', alpha=(1-alpha))
         
+        b=plt.gca().add_patch(rect)
         a=plt.imshow(img_log, extent=ext, cmap=colour, origin='lower', alpha=alpha, aspect='auto')
         plt.savefig('./Video_test1/vid_test1_%d.png'%frame)
         plt.clf()
@@ -239,7 +241,7 @@ def evolve(fields, boxsize, frame, colour, extent, phi=0):
         
         img = qv.get_image()
         img_log = img_norm(img, boxsize)
-        for _ in range(5):
+        for _ in range(3):
             plt.imsave('./Video_test1/vid_test1_%d.png'%frame, img_log, cmap=colour, origin='lower')
             frame += 1
         
@@ -287,6 +289,7 @@ star_evol = (stars_10,
              limit(.01, read_data(read_snap(snaps[26][0], snaps[26][1], snaps[26][2]), 4), 'hsml'),
              limit(.01, read_data(read_snap(snaps[27][0], snaps[27][1], snaps[27][2]), 4), 'hsml'),
              stars_28)
+
 #star = limit(.01, read_data(read_snap(snaps[19][0], snaps[19][1], snaps[19][2]), 4), 'hsml')
 #for j in stars_28['hsml']:
     #if j != 0.01:
