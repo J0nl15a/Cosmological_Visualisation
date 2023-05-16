@@ -1,11 +1,7 @@
-
-#!/usr/bin/env python
-# coding: utf-8
-
 # In[1]:
 
 import matplotlib.patches as mpatches
-#matplotlib.use('Agg')
+import math
 import h5py
 import numpy as np
 import pandas as pd
@@ -122,8 +118,9 @@ def rotate(phi_min, phi_max, field, boxsize, frame, colour, extent):
 # In[ ]:
 
 
-def zoom(max_zoom, magnification, zoom_steps, field, boxsize, frame, colour, phi=0, min_zoom = min_zoom):
-    
+def zoom(max_zoom, magnification, seconds, field, boxsize, frame, colour, phi=0, min_zoom = min_zoom):
+
+    zoom_steps = math.ceil(seconds*25)
     zoom_start = max_zoom
     zoom_stop = ((max_zoom-min_zoom)/magnification)+min_zoom
     zoom_mag = np.linspace(zoom_start, zoom_stop, zoom_steps+1)
@@ -150,7 +147,8 @@ def zoom(max_zoom, magnification, zoom_steps, field, boxsize, frame, colour, phi
 # In[ ]:
 
 
-def change(field1, field2, steps, boxsize, frame, colour1, colour2, extent, phi=0):
+def change(field1, field2, seconds, boxsize, frame, colour1, colour2, extent, phi=0):
+    steps = math.ceil(seconds*25)
     u = np.linspace(1, 0, steps+1)
 
     qv1 = QuickView(field1[['x', 'y', 'z']].values, mass=(field1.mass.values if field1.name != 'dm' else None), hsml=(field1.hsml.values if field1.name != 'dm' else None), r='infinity', plot=False, logscale=False, xsize=1000, ysize=1000, p=phi, extent=extent)
@@ -188,7 +186,9 @@ def change(field1, field2, steps, boxsize, frame, colour1, colour2, extent, phi=
 # In[ ]:
 
 
-def fade(field, steps, boxsize, frame, colour, extent=None, phi=0, fade_in = False, fade_out = False):
+def fade(field, seconds, boxsize, frame, colour, extent=None, phi=0, fade_in = False, fade_out = False):
+    
+    steps = math.ceil(seconds*25)
     if fade_in == True:
         u = np.linspace(0, 1, steps+1)
     elif fade_out == True:
@@ -241,7 +241,7 @@ def evolve(fields, boxsize, frame, colour, extent, phi=0):
         
         img = qv.get_image()
         img_log = img_norm(img, boxsize)
-        for _ in range(3):
+        for _ in range(2):
             plt.imsave('./Video_test1/vid_test1_%d.png'%frame, img_log, cmap=colour, origin='lower')
             frame += 1
         
@@ -296,43 +296,45 @@ star_evol = (stars_10,
         #print(j)
 #sys.exit()
 
-#Start with DM fade in
-max_zoom, frame = fade(dm_0, 50, boxsize, 0, 'viridis', fade_in = True)
-print('Done with fade in')
-#DM zoom x2.5
-extent, frame = zoom(max_zoom, 2.5, 125, dm_0, boxsize, frame, 'viridis')
-print('Done with zoom in x2.5')
-#Rotate DM by pi
-phi, frame = rotate(0, 130, dm_0, boxsize, frame, 'viridis', extent)
-print('Done with rotate by pi')
-#Change from DM to gas
-frame = change(dm_0, gas_0, 50, boxsize, frame, 'viridis', 'plasma', extent, phi)
-print('Done with change to gas')
-#Evolve gas through z
-frame = evolve(gas_evol, boxsize, frame, 'plasma', extent, phi)
-print('Done with evolve')
-#Rotate gas by pi/2
-phi, frame = rotate(130, 230, gas_10, boxsize, frame, 'plasma', extent)
-print('Done with rotate by pi/2')
-#Gas zoom x2
-extent, frame = zoom(extent[1], 2, 125, gas_10, boxsize, frame, 'plasma', phi)
-print('Done with zoom in x2')
-#Change from gas to stars
-frame = change(gas_10, stars_10, 50, boxsize, frame, 'plasma', 'bone', extent, phi)
-print('Done with change to stars')
-#Rotate stars by pi/2
-phi, frame = rotate(230, 345, stars_10, boxsize, frame, 'bone', extent)
-print('Done with rotate by pi/2')
-#Stars zoom x(-4)
-extent, frame = zoom(extent[1], 0.25, 125, stars_10, boxsize, frame, 'bone', phi)
-print('Done with zoom out x4')
-#Evolve star through z
-frame = evolve(star_evol, boxsize, frame, 'bone', extent, phi)
-print('Done with star evolve')
-#Fade out on stars
-frame = fade(stars_28, 50, boxsize, frame, 'bone', extent, phi, fade_out = True)
-print('Done with fade out')
-print(frame)
+if __name__ == "__main__":
+
+    #Start with DM fade in
+    max_zoom, frame = fade(dm_0, 50, boxsize, 0, 'viridis', fade_in = True)
+    print('Done with fade in')
+    #DM zoom x2.5
+    extent, frame = zoom(max_zoom, 2.5, 125, dm_0, boxsize, frame, 'viridis')
+    print('Done with zoom in x2.5')
+    #Rotate DM by pi
+    phi, frame = rotate(0, 130, dm_0, boxsize, frame, 'viridis', extent)
+    print('Done with rotate by pi')
+    #Change from DM to gas
+    frame = change(dm_0, gas_0, 50, boxsize, frame, 'viridis', 'plasma', extent, phi)
+    print('Done with change to gas')
+    #Evolve gas through z
+    frame = evolve(gas_evol, boxsize, frame, 'plasma', extent, phi)
+    print('Done with evolve')
+    #Rotate gas by pi/2
+    phi, frame = rotate(130, 230, gas_10, boxsize, frame, 'plasma', extent)
+    print('Done with rotate by pi/2')
+    #Gas zoom x2
+    extent, frame = zoom(extent[1], 2, 125, gas_10, boxsize, frame, 'plasma', phi)
+    print('Done with zoom in x2')
+    #Change from gas to stars
+    frame = change(gas_10, stars_10, 50, boxsize, frame, 'plasma', 'bone', extent, phi)
+    print('Done with change to stars')
+    #Rotate stars by pi/2
+    phi, frame = rotate(230, 345, stars_10, boxsize, frame, 'bone', extent)
+    print('Done with rotate by pi/2')
+    #Stars zoom x(-4)
+    extent, frame = zoom(extent[1], 0.25, 125, stars_10, boxsize, frame, 'bone', phi)
+    print('Done with zoom out x4')
+    #Evolve star through z
+    frame = evolve(star_evol, boxsize, frame, 'bone', extent, phi)
+    print('Done with star evolve')
+    #Fade out on stars
+    frame = fade(stars_28, 50, boxsize, frame, 'bone', extent, phi, fade_out = True)
+    print('Done with fade out')
+    print(frame)
 
 
 # In[ ]:
