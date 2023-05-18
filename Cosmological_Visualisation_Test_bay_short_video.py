@@ -96,7 +96,7 @@ def img_norm(img, boxsize):
 # In[ ]:
 
 
-def rotate(phi_min, phi_max, field, boxsize, frame, colour, extent):
+def rotate(phi_min, phi_max, field, boxsize, frame, colour, extent=None):
     
     for p in range(phi_min, phi_max+1): 
     
@@ -147,7 +147,7 @@ def zoom(max_zoom, magnification, seconds, field, boxsize, frame, colour, phi=0,
 # In[ ]:
 
 
-def change(field1, field2, seconds, boxsize, frame, colour1, colour2, extent, phi=0):
+def change(field1, field2, seconds, boxsize, frame, colour1, colour2, extent=None, phi=0):
     steps = math.ceil(seconds*25)
     u = np.linspace(1, 0, steps+1)
 
@@ -232,7 +232,7 @@ def fade(field, seconds, boxsize, frame, colour, extent=None, phi=0, fade_in = F
 # In[ ]:
 
 
-def evolve(fields, boxsize, frame, colour, extent, phi=0):
+def evolve(fields, boxsize, frame, colour, extent=None, phi=0):
     
     for f in fields:
         print(f)
