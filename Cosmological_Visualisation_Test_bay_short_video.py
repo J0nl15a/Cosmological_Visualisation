@@ -93,12 +93,33 @@ def img_norm(img, boxsize):
     return img_log
 
 
+def trajectory(angle, flight_time, field, boxsize, frame, colour, extent=None, phi=0):
+
+    steps = math.ceil(flight_time*25)
+
+    for a in np.linspace(phi, phi+steps, steps):
+
+        qv = QuickView(field[['x', 'y', 'z']].values, mass=(field.mass.values if field.name != 'dm' else None), hsml=(field.hsml.values if field.name != 'dm' else None), r='infinity', plot=False, logscale=False, xsize=1000, ysize=1000, p=a, t=a, extent = extent)
+
+        img = qv.get_image()
+        img_log = img_norm(img, boxsize)
+        plt.imsave('./Video_test1/vid_test1_%d.png'%frame, img_log, cmap=colour, origin='lower')
+        frame += 1
+
+        if a != phi+steps:
+            pass
+        elif a == phi+steps:
+            print(frame)
+            #plt.clf()
+            return a, frame
+
+
 # In[ ]:
 
 
 def rotate(phi_min, phi_max, field, boxsize, frame, colour, extent=None):
     
-    for p in range(phi_min, phi_max+1): 
+    for p in np.linspace(phi_min, phi_max, phi_max-phi_min): 
     
         qv = QuickView(field[['x', 'y', 'z']].values, mass=(field.mass.values if field.name != 'dm' else None), hsml=(field.hsml.values if field.name != 'dm' else None), r='infinity', plot=False, logscale=False, xsize=1000, ysize=1000, p=p, t=0, extent = extent)
 
@@ -235,8 +256,6 @@ def fade(field, seconds, boxsize, frame, colour, extent=None, phi=0, fade_in = F
 def evolve(fields, boxsize, frame, colour, extent=None, phi=0):
     
     for f in fields:
-        print(f)
-        print(frame)
         qv = QuickView(f[['x', 'y', 'z']].values, mass=(f.mass.values if f.name != 'dm' else None), hsml=(f.hsml.values if f.name != 'dm' else None), r='infinity', plot=False, logscale=False, xsize=1000, ysize=1000, p=phi, extent=extent)
         
         img = qv.get_image()
@@ -248,6 +267,24 @@ def evolve(fields, boxsize, frame, colour, extent=None, phi=0):
     print(frame)
     #plt.clf()
     return frame
+
+
+
+def wait(field, seconds, boxsize, frame, colour, extent=None, phi=0):
+    steps = math.ceil(seconds*25)
+
+    qv = QuickView(field[['x', 'y', 'z']].values, mass=(field.mass.values if field.name != 'dm' else None), hsml=(field.hsml.values if field.name != 'dm' else None), r='infinity', plot=False, logscale=False, xsize=1000, ysize=1000, p=phi, extent=extent)
+
+    img = qv.get_image()
+    img_log = img_norm(img, boxsize)
+
+    for _ in range(steps+1):
+        plt.imsave('./Video_test1/vid_test1_%d.png'%frame, img_log, cmap=colour, origin='lower')
+        frame += 1
+
+    print(frame)
+    return frame
+
 
 
 # In[ ]:

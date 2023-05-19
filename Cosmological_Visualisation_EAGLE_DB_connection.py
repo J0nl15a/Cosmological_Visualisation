@@ -50,7 +50,7 @@ query = ''' SELECT
 #result = vdb.execute_query(query)
 result = sql.execute_query(vdb, query)
 df = pd.DataFrame(result)
-print(df)
+#print(df)
 
 
 # In[18]:
