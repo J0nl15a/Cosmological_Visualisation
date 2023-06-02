@@ -63,9 +63,9 @@ print(sub_sample.head())
 # In[19]:
 
 
-#h = 0.6777
+h = 0.6777
 positions = pd.DataFrame()
-positions['M_stellar'] = sub_sample.loc[sub_sample.GroupNumber == 3].stellar_mass.values
+positions['M_stellar'] = sub_sample.loc[sub_sample.GroupNumber == 1].stellar_mass.values
 positions['x'] = sub_sample.loc[sub_sample.GroupNumber == 1].COP_x.values
 positions['y'] = sub_sample.loc[sub_sample.GroupNumber == 1].COP_y.values
 positions['z'] = sub_sample.loc[sub_sample.GroupNumber == 1].COP_z.values
